@@ -129,14 +129,14 @@ WORKOUT_TYPES: Dict[str, Type[Training]] = {
     'WLK': SportsWalking,
 }
 
-errors: str = 'Неизвестный тип тренировки:'
+ERRORS: str = 'Неизвестный тип тренировки:'
 
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
     if workout_type in WORKOUT_TYPES:
         return WORKOUT_TYPES[workout_type](*data)
-    raise ValueError(f'{errors} {workout_type}')
+    raise ValueError(f'{ERRORS} {workout_type}')
 
 
 def main(training: Training) -> None:
