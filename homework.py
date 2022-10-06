@@ -26,6 +26,7 @@ class Training:
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
     MIN_IN_HOUR: int = 60
+    ERROR_METHOD: str = 'Метод не переопределен наследниками класса'
 
     def __init__(self,
                  action: int,
@@ -46,7 +47,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError('Метод не переопределен наследниками класса')
+        raise NotImplementedError(self.ERROR_METHOD)
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -57,8 +58,8 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    COEFF_SPEED_MULTIPLIER: int = 18
-    COEFF_SUBTRAHEND_CALORIES: int = 20
+    SPEED_MULTIPLIER: int = 18
+    SUBTRAHEND_CALORIES: int = 20
 
     def __init__(self,
                  action: int,
@@ -69,13 +70,16 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий бега."""
-        return ((self.COEFF_SPEED_MULTIPLIER * self.get_mean_speed()
-                - self.COEFF_SUBTRAHEND_CALORIES) * self.weight
+        return ((self.SPEED_MULTIPLIER * self.get_mean_speed()
+                - self.SUBTRAHEND_CALORIES) * self.weight
                 / self.M_IN_KM * self.duration * self.MIN_IN_HOUR)
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
+    COEFF_OF_WIGHT: float = 0.035
+    COEFF_ACCELERATION: float = 0.029
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -87,23 +91,23 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий ходьбы."""
-        COEFF_OF_WIGHT = 0.035
-        COEFF_ACCELERATION = 0.029
-        return ((COEFF_OF_WIGHT * self.weight
+        return ((self.COEFF_OF_WIGHT * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
-                * COEFF_ACCELERATION
+                * self.COEFF_ACCELERATION
                 * self.weight) * self.duration * self.MIN_IN_HOUR)
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
+    SPEED_FACTOR = 1.1
+    WIGHT_FACTOR = 2
 
     def __init__(self,
                  action: int,
                  duration: float,
                  weight: float,
-                 length_pool: float(),
+                 length_pool: float,
                  count_pool: int,
                  ) -> None:
         super().__init__(action, duration, weight)
@@ -117,10 +121,8 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий плаванья."""
-        coef_calor_swim_1 = 1.1
-        coef_calor_swim_2 = 2
-        return ((self.get_mean_speed() + coef_calor_swim_1)
-                * coef_calor_swim_2 * self.weight)
+        return ((self.get_mean_speed() + self.SPEED_FACTOR)
+                * self.WIGHT_FACTOR * self.weight)
 
 
 WORKOUT_TYPES: Dict[str, Type[Training]] = {
