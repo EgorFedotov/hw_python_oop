@@ -26,7 +26,7 @@ class Training:
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
     MIN_IN_HOUR: int = 60
-    NOT_IMPLEMENTED_ERROR_TEXT: str = 'Метод не переопределен наследниками класса'
+    NOT_IMPLEMENTED_ERROR_TEXT: str = 'Метод не переопределен наследниками'
 
     def __init__(self,
                  action: int,
@@ -53,7 +53,7 @@ class Training:
         """Вернуть информационное сообщение о выполненной тренировке."""
         return InfoMessage(self.__class__.__name__,
                            self.duration,
-                           self.get_distance(), 
+                           self.get_distance(),
                            self.get_mean_speed(),
                            self.get_spent_calories())
 
