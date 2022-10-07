@@ -26,7 +26,7 @@ class Training:
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
     MIN_IN_HOUR: int = 60
-    ERROR_METHOD: str = 'Метод не переопределен наследниками класса'
+    NOT_IMPLEMENTED_ERROR_TEXT: str = 'Метод не переопределен наследниками класса'
 
     def __init__(self,
                  action: int,
@@ -47,12 +47,14 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError(self.ERROR_METHOD)
+        raise NotImplementedError(self.NOT_IMPLEMENTED_ERROR_TEXT)
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        return InfoMessage(self.__class__.__name__, self.duration,
-                           self.get_distance(), self.get_mean_speed(),
+        return InfoMessage(self.__class__.__name__,
+                           self.duration,
+                           self.get_distance(), 
+                           self.get_mean_speed(),
                            self.get_spent_calories())
 
 
@@ -77,7 +79,7 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    COEFF_OF_WIGHT: float = 0.035
+    COEFF_OF_WEIGHT: float = 0.035
     COEFF_ACCELERATION: float = 0.029
 
     def __init__(self,
@@ -91,7 +93,7 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий ходьбы."""
-        return ((self.COEFF_OF_WIGHT * self.weight
+        return ((self.COEFF_OF_WEIGHT * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
                 * self.COEFF_ACCELERATION
                 * self.weight) * self.duration * self.MIN_IN_HOUR)
@@ -131,14 +133,14 @@ WORKOUT_TYPES: Dict[str, Type[Training]] = {
     'WLK': SportsWalking,
 }
 
-ERRORS: str = 'Неизвестный тип тренировки:'
+VALUE_ERROR_TEXT: str = 'Неизвестный тип тренировки:'
 
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
     if workout_type in WORKOUT_TYPES:
         return WORKOUT_TYPES[workout_type](*data)
-    raise ValueError(f'{ERRORS} {workout_type}')
+    raise ValueError(f'{VALUE_ERROR_TEXT} {workout_type}')
 
 
 def main(training: Training) -> None:
